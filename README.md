@@ -99,14 +99,6 @@ terraform apply -auto-approve plan.out
 
 ```
 
-#### 4. Destroy Resources (if needed)
-
-To clean up and remove the deployment:
-
-```bash
-terraform destroy -var-file="../dev/westeurope/2178/terraform.tfvars"
-```
-
 
 ## Additional Resources
 
