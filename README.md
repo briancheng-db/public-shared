@@ -88,11 +88,6 @@ Review the deployment plan before applying:
 # For development environment
 terraform plan -var-file="../dev/westeurope/2178/terraform.tfvars"
 
-# For staging environment (if you have stg terraform.tfvars)
-terraform plan -var-file="../stg/westeurope/2178/terraform.tfvars"
-
-# For production environment (if you have prod terraform.tfvars)
-terraform plan -var-file="../prod/westeurope/2178/terraform.tfvars"
 ```
 
 #### 3. Apply Deployment
@@ -100,14 +95,8 @@ terraform plan -var-file="../prod/westeurope/2178/terraform.tfvars"
 Deploy the DAB bundle using Terraform:
 
 ```bash
-# For development environment
-terraform apply -var-file="../dev/westeurope/2178/terraform.tfvars"
+terraform apply -auto-approve plan.out
 
-# For staging environment
-terraform apply -var-file="../stg/westeurope/2178/terraform.tfvars"
-
-# For production environment
-terraform apply -var-file="../prod/westeurope/2178/terraform.tfvars"
 ```
 
 #### 4. Destroy Resources (if needed)
