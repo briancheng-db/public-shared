@@ -51,8 +51,7 @@ template/
 ├── main.tf              # Main Terraform configuration
 ├── variables.tf         # Input variables definition
 ├── outputs.tf           # Output values
-├── versions.tf          # Terraform and provider versions
-└── terraform.tfstate    # State file (generated)
+└── versions.tf          # Terraform and provider versions
 
 dev/westeurope/2178/
 └── terraform.tfvars     # Environment-specific variables
