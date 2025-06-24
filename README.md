@@ -121,7 +121,7 @@ terraform destroy -var-file="../dev/westeurope/2178/terraform.tfvars"
 
 ## Additional Resources
 
-- [Databricks Asset Bundles Documentation](https://docs.databricks.com/dev-tools/bundles/index.html)
-- [Databricks CLI Documentation](https://docs.databricks.com/dev-tools/cli/databricks-cli.html)
-- [Deployment Modes](https://docs.databricks.com/dev-tools/bundles/deployment-modes.html)
+- [Databricks Asset Bundles Documentation](https://learn.microsoft.com/en-gb/azure/databricks/dev-tools/bundles/)
+- [Databricks CLI Documentation](https://learn.microsoft.com/en-gb/azure/databricks/dev-tools/cli/)
+- [Deployment Modes](https://learn.microsoft.com/en-gb/azure/databricks/dev-tools/bundles/deployment-modes)
 - [Terraform null_resource](https://www.terraform.io/docs/providers/null/resource.html)
