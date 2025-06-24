@@ -1,0 +1,14 @@
+targets:
+  prod:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: production
+    workspace:
+      host: https://adb-1204991431543582.2.azuredatabricks.net
+      root_path: /Workspace/Users/brian.cheng@databricks.com/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      # env: prod
+      catalog: dabpoc_catalog_prod
+      schema: bu_schema

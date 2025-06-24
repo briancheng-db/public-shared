@@ -1,0 +1,6 @@
+bundle:
+  name: dab_sample
+
+include:
+  - resources/*.yml
+  - conf/*.yml

@@ -1,0 +1,21 @@
+variables:
+  catalog:
+    description: "Catalog name"
+    default: dabpoc_catalog_default
+  schema:
+    description: "Schema name"
+    default: bu_schema2_default
+
+resources:
+  jobs:
+    dab_table_select_job:
+      name: dab_table_select
+      parameters: # job level parameters
+        - name: catalog
+          default: ${var.catalog}
+        - name: schema
+          default: ${var.schema}
+      tasks:
+        - task_key: demo
+          notebook_task:
+            notebook_path: ../notebooks/table_select.ipynb
