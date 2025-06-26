@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  name: brian_vmss_agent_pool
 
 steps:
 - script: echo Hello, world!
