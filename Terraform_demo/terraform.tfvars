@@ -1,0 +1,5 @@
+databricks_host = "https://dummy-databricks-workspace.azuredatabricks.net/"
+azure_ws_resource_id = "/subscriptions/dummy-subscription-id/resourceGroups/dummy-resource-group/providers/Microsoft.Databricks/workspaces/dummy-workspace"
+azure_sp_client_id = "dummy-client-id-12345-67890-abcdef"
+azure_sp_client_secret = "dummy-client-secret-12345-67890-abcdef"
+azure_sp_tenant_id = "dummy-tenant-id-12345-67890-abcdef"

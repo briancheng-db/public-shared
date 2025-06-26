@@ -1,0 +1,88 @@
+trigger:
+- tf-demo
+
+pool:
+  name: 'brian_vmss_agent_pool'
+
+variables:
+  - group: scb-demo    # Reference to the variable group
+  - name: subscription_id
+    value: 'edd4cc45-85c7-4aec-8bf5-648062d519bf' # Replace with your Azure Subscription ID
+  - name: backend_storage_account
+    value: 'amanpsteamsatf'
+  - name: backend_container_name
+    value: 'tfcontainer'
+  - name: backend_key
+    value: 'state/terraform.tfstate'    # State file name
+  - name: target
+    value: 'module.db_workspace' # Specify the target module/resource here
+
+steps:
+# Step 1: Login to Azure
+- task: Bash@3
+  displayName: 'Interactive Login to Azure'
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Logging in to Azure interactively..."
+      az login --use-device-code
+      az account set --subscription $(subscription_id)
+
+# Step 2: Install Terraform
+- task: Bash@3
+  displayName: 'Install Terraform'
+  inputs:
+    targetType: 'inline'
+    script: |
+      sudo apt-get update && sudo apt-get install -y unzip
+      curl -o terraform.zip https://releases.hashicorp.com/terraform/1.5.4/terraform_1.5.4_linux_amd64.zip
+      unzip terraform.zip && sudo mv terraform /usr/local/bin/
+      terraform --version
+
+# Step 3: Terraform Init
+- task: Bash@3
+  displayName: 'Terraform Init'
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Starting Terraform Init..."
+      cd Terraform_demo # Ensure you are in the correct directory
+      terraform init
+
+      # Validate initialization success
+      if [ $? -ne 0 ]; then
+        echo "Terraform Init failed."
+        exit 1
+      fi
+      echo "Terraform Init completed successfully."
+
+# Step 4: Terraform Plan
+- task: Bash@3
+  displayName: 'Terraform Plan'
+  inputs:
+    targetType: 'inline'
+    script: |
+      cd Terraform_demo
+      terraform plan \
+        -var="databricks_host=$(databricks_host)" \
+        -var="azure_ws_resource_id=$(azure_ws_resource_id)" \
+        -var="azure_sp_client_id=$(azure_sp_client_id)" \
+        -var="azure_sp_client_secret=$(azure_sp_client_secret)" \
+        -var="azure_sp_tenant_id=$(azure_sp_tenant_id)" \
+        -out=plan.out
+
+      # Validate plan success
+      if [ $? -ne 0 ]; then
+        echo "Terraform Plan failed."
+        exit 1
+      fi
+      echo "Terraform Plan completed successfully."
+
+# Step 5: Terraform Apply
+- task: Bash@3
+  displayName: 'Terraform Apply'
+  inputs:
+    targetType: 'inline'
+    script: |
+      cd Terraform_demo
+      terraform apply -auto-approve plan.out
