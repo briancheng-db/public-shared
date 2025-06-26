@@ -18,6 +18,14 @@ variables:
     value: 'module.db_workspace' # Specify the target module/resource here
 
 steps:
+# Step 0: Install az command
+- task: Bash@3
+  displayName: 'Install az command'
+  inputs:
+    targetType: 'inline'
+    script: |
+      curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
 # Step 1: Login to Azure
 - task: Bash@3
   displayName: 'Interactive Login to Azure'
