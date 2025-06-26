@@ -2,7 +2,7 @@ trigger:
 - tf-demo
 
 pool:
-  name: 'brian_vmss_agent_pool'
+  name: dbxbcpool
 
 variables:
   - group: scb-demo    # Reference to the variable group
