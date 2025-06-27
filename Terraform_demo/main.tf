@@ -3,7 +3,7 @@ data "databricks_current_user" "me" {
 
 resource "databricks_notebook" "select_sql" {
   source = "sql.py"
-  path   = "${data.databricks_current_user.me.home}/AA/notebook/sql"
+  path   = "${data.databricks_current_user.me.home}/AA/notebook/sql2"
 }
 
 

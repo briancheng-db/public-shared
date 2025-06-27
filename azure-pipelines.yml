@@ -9,9 +9,9 @@ variables:
   - name: subscription_id
     value: 'edd4cc45-85c7-4aec-8bf5-648062d519bf' # Replace with your Azure Subscription ID
   - name: backend_storage_account
-    value: 'amanpsteamsatf'
+    value: 'scbdevadlsg2'
   - name: backend_container_name
-    value: 'tfcontainer'
+    value: 'scbdev-container'
   - name: backend_key
     value: 'state/terraform.tfstate'    # State file name
   - name: target
@@ -55,7 +55,11 @@ steps:
     script: |
       echo "Starting Terraform Init..."
       cd Terraform_demo # Ensure you are in the correct directory
-      terraform init
+      terraform init \
+        -backend-config="storage_account_name=$(backend_storage_account)" \
+        -backend-config="container_name=$(backend_container_name)" \
+        -backend-config="key=$(backend_key)" \
+        -backend-config="subscription_id=$(subscription_id)"
 
       # Validate initialization success
       if [ $? -ne 0 ]; then
