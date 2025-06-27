@@ -62,7 +62,6 @@ steps:
         -backend-config="container_name=$(backend_container_name)" \
         -backend-config="key=$(backend_key)" \
         -backend-config="subscription_id=$(subscription_id)"
-        -backend-config="resource_group_name=$(backend_resource_group_name)"
 
       # Validate initialization success
       if [ $? -ne 0 ]; then
