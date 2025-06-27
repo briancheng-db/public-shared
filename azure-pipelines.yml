@@ -8,6 +8,8 @@ variables:
   - group: scb-demo    # Reference to the variable group
   - name: subscription_id
     value: 'edd4cc45-85c7-4aec-8bf5-648062d519bf' # Replace with your Azure Subscription ID
+  - name: backend_resource_group_name
+    value: 'scb-dev-rg'
   - name: backend_storage_account
     value: 'scbdevadlsg2'
   - name: backend_container_name
@@ -60,6 +62,7 @@ steps:
         -backend-config="container_name=$(backend_container_name)" \
         -backend-config="key=$(backend_key)" \
         -backend-config="subscription_id=$(subscription_id)"
+        -backend-config="resource_group_name=$(backend_resource_group_name)"
 
       # Validate initialization success
       if [ $? -ne 0 ]; then
