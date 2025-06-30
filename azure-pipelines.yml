@@ -33,6 +33,7 @@ variables:
     value: 'edd4cc45-85c7-4aec-8bf5-648062d519bf' # Replace with your Azure Subscription ID
 
 
+
 steps:
 # Step 0: Install az command
 - task: Bash@3
@@ -72,7 +73,7 @@ steps:
     targetType: 'inline'
     script: |
       echo "Logging in to Azure interactively..."
-      az login --use-device-code
+      az login --service-principal --username $(azure_sp_client_id) --password $(azure_sp_client_secret) --tenant $(azure_sp_tenant_id)
       az account set --subscription $(subscription_id)
 
 # Step 2: Validate Databricks Asset Bundle
