@@ -9,6 +9,6 @@ targets:
       host: https://adb-1204991431543582.2.azuredatabricks.net
       root_path: /Workspace/Users/brian.cheng@databricks.com/.bundle/${bundle.name}/${bundle.target}
     variables:
-      # env: prod
+      # user is able to add variables here
       catalog: dabpoc_catalog_prod
       schema: bu_schema

@@ -8,7 +8,7 @@ targets:
     workspace:
       host: https://adb-4195911692568648.8.azuredatabricks.net
     variables:
-      # env: dev
+      # user is able to add variables here
       catalog: dabpoc_catalog_dev_stg
       schema: bu_schema_dab_dev
     default: true

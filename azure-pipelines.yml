@@ -44,7 +44,7 @@ steps:
     targetType: 'inline'
     script: |
       echo "Installing Databricks CLI..."
-      curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+      curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sudo sh
       echo 'export PATH="/home/vsts/.local/bin:$PATH"' >> ~/.bashrc
       source ~/.bashrc
       databricks --version
