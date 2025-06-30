@@ -27,6 +27,9 @@ variables:
     value: 'module.db_workspace' # Specify the target module/resource here
   - name: DATABRICKS_AZURE_RESOURCE_ID
     value: $(databricks_azure_resource_id)
+  - name: subscription_id
+    value: 'edd4cc45-85c7-4aec-8bf5-648062d519bf' # Replace with your Azure Subscription ID
+
 
 steps:
 # Step 0: Install az command
