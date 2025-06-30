@@ -1,29 +1,32 @@
 trigger:
-- tf-demo
+- dab-ado-demo
+
+parameters:
+- name: is_run_after_deploy
+  displayName: 'Run Job After Deployment'
+  type: string
+  default: 'false'
+  values:
+  - 'true'
+  - 'false'
+- name: job_name
+  displayName: 'Job Name to Run'
+  type: string
+  default: 'dab_table_select_job'
+- name: working_directory
+  displayName: 'Working Directory'
+  type: string
+  default: '$(System.DefaultWorkingDirectory)/dab_sample'
 
 pool:
   name: dbxbcpool
 
 variables:
   - group: scb-demo    # Reference to the variable group
-  - name: subscription_id
-    value: 'edd4cc45-85c7-4aec-8bf5-648062d519bf' # Replace with your Azure Subscription ID
-  - name: backend_resource_group_name
-    value: 'scb-dev-rg'
-  - name: backend_storage_account
-    value: 'scbdevadlsg2'
-  - name: backend_container_name
-    value: 'scbdev-container'
-  - name: backend_key
-    value: 'state/terraform.tfstate'    # State file name
   - name: target
     value: 'module.db_workspace' # Specify the target module/resource here
-  - name: ARM_CLIENT_ID
-    value: $(azure_sp_client_id)
-  - name: ARM_CLIENT_SECRET
-    value: $(azure_sp_client_secret)
-  - name: ARM_TENANT_ID
-    value: $(azure_sp_tenant_id)
+  - name: DATABRICKS_AZURE_RESOURCE_ID
+    value: $(databricks_azure_resource_id)
 
 steps:
 # Step 0: Install az command
@@ -33,6 +36,18 @@ steps:
     targetType: 'inline'
     script: |
       curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+# Step 0.5: Install Databricks CLI
+- task: Bash@3
+  displayName: 'Install Databricks CLI'
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Installing Databricks CLI..."
+      curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+      echo 'export PATH="/home/vsts/.local/bin:$PATH"' >> ~/.bashrc
+      source ~/.bashrc
+      databricks --version
 
 # Step 1: Login to Azure
 - task: Bash@3
@@ -44,65 +59,40 @@ steps:
       az login --use-device-code
       az account set --subscription $(subscription_id)
 
-# Step 2: Install Terraform
+# Step 2: Validate Databricks Asset Bundle
 - task: Bash@3
-  displayName: 'Install Terraform'
+  displayName: 'Validate Databricks Asset Bundle'
   inputs:
     targetType: 'inline'
+    workingDirectory: '${{ parameters.working_directory }}'
     script: |
-      sudo apt-get update && sudo apt-get install -y unzip
-      curl -o terraform.zip https://releases.hashicorp.com/terraform/1.5.4/terraform_1.5.4_linux_amd64.zip
-      unzip terraform.zip && sudo mv terraform /usr/local/bin/
-      terraform --version
+      echo "Validating Databricks Asset Bundle..."
+      databricks bundle validate -t $target
+      echo "Bundle validation completed successfully."
 
-# Step 3: Terraform Init
+# Step 3: Deploy Databricks Asset Bundle
 - task: Bash@3
-  displayName: 'Terraform Init'
+  displayName: 'Deploy Databricks Asset Bundle'
   inputs:
     targetType: 'inline'
+    workingDirectory: '${{ parameters.working_directory }}'
     script: |
-      echo "Starting Terraform Init..."
-      cd Terraform_demo # Ensure you are in the correct directory
-      terraform init \
-        -backend-config="storage_account_name=$(backend_storage_account)" \
-        -backend-config="container_name=$(backend_container_name)" \
-        -backend-config="key=$(backend_key)" \
-        -backend-config="subscription_id=$(subscription_id)"
+      echo "Deploying Databricks Asset Bundle..."
+      databricks bundle deploy -t $target
+      echo "Bundle deployment completed successfully."
 
-      # Validate initialization success
-      if [ $? -ne 0 ]; then
-        echo "Terraform Init failed."
-        exit 1
+# Step 4: Run Databricks Job (Conditional)
+- task: Bash@3
+  displayName: 'Run Databricks Job'
+  condition: and(succeeded(), eq('${{ parameters.is_run_after_deploy }}', 'true'))
+  inputs:
+    targetType: 'inline'
+    workingDirectory: '${{ parameters.working_directory }}'
+    script: |
+      echo "Running Databricks job after deployment..."
+      if [ -n "${{ parameters.job_name }}" ]; then
+        databricks bundle run ${{ parameters.job_name }} -t $target --no-wait
+        echo "Job execution initiated successfully."
+      else
+        echo "No job name specified, skipping job execution."
       fi
-      echo "Terraform Init completed successfully."
-
-# Step 4: Terraform Plan
-- task: Bash@3
-  displayName: 'Terraform Plan'
-  inputs:
-    targetType: 'inline'
-    script: |
-      cd Terraform_demo
-      terraform plan \
-        -var="databricks_host=$(databricks_host)" \
-        -var="azure_ws_resource_id=$(azure_ws_resource_id)" \
-        -var="azure_sp_client_id=$(azure_sp_client_id)" \
-        -var="azure_sp_client_secret=$(azure_sp_client_secret)" \
-        -var="azure_sp_tenant_id=$(azure_sp_tenant_id)" \
-        -out=plan.out
-
-      # Validate plan success
-      if [ $? -ne 0 ]; then
-        echo "Terraform Plan failed."
-        exit 1
-      fi
-      echo "Terraform Plan completed successfully."
-
-# Step 5: Terraform Apply
-- task: Bash@3
-  displayName: 'Terraform Apply'
-  inputs:
-    targetType: 'inline'
-    script: |
-      cd Terraform_demo
-      terraform apply -auto-approve plan.out
