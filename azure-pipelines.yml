@@ -84,7 +84,7 @@ steps:
     workingDirectory: '${{ parameters.working_directory }}'
     script: |
       echo "Validating Databricks Asset Bundle..."
-      databricks bundle validate -t $target
+      databricks bundle validate -t ${{ parameters.target }}
       echo "Bundle validation completed successfully."
 
 # Step 3: Deploy Databricks Asset Bundle
@@ -95,7 +95,7 @@ steps:
     workingDirectory: '${{ parameters.working_directory }}'
     script: |
       echo "Deploying Databricks Asset Bundle..."
-      databricks bundle deploy -t $target
+      databricks bundle deploy -t ${{ parameters.target }}
       echo "Bundle deployment completed successfully."
 
 # Step 4: Run Databricks Job (Conditional)
@@ -108,7 +108,7 @@ steps:
     script: |
       echo "Running Databricks job after deployment..."
       if [ -n "${{ parameters.job_name }}" ]; then
-        databricks bundle run ${{ parameters.job_name }} -t $target --no-wait
+        databricks bundle run ${{ parameters.job_name }} -t ${{ parameters.target }} --no-wait
         echo "Job execution initiated successfully."
       else
         echo "No job name specified, skipping job execution."
