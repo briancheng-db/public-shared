@@ -1,27 +1,18 @@
 # Databricks Asset Bundle (DAB) Sample Project
 
-This project demonstrates how to use Databricks Asset Bundles (DAB) to deploy and manage Databricks resources via Terraform across different environments (development, staging, and production).
+This project demonstrates how to use Databricks Asset Bundles (DAB) to deploy and manage Databricks resources across different environments using Azure DevOps pipelines.
 
+## Overview
+
+- **Databricks Asset Bundles (DAB)** for resource management
+- **Azure DevOps Pipelines** for automated deployment
+- **Service Principal Authentication** for secure deployments
 
 ## Prerequisites
 
-1. **Databricks CLI**: Install the Databricks CLI from [Databricks CLI Documentation](https://docs.databricks.com/dev-tools/cli/databricks-cli.html)
-
-2. **Databricks Workspace Access**: You need access to a Databricks workspace with appropriate permissions
-
-
-## Authentication Setup ([ref](https://learn.microsoft.com/en-gb/azure/databricks/dev-tools/bundles/authentication))
-### Service Principal Authentication (Recommended for CI/CD)
-
-For production deployments and CI/CD pipelines, use service principal authentication:
-
-**Set Environment Variables**:
-   ```bash
-   export DATABRICKS_CLIENT_ID="your-service-principal-client-id"
-   export DATABRICKS_CLIENT_SECRET="your-service-principal-client-secret"
-   export DATABRICKS_HOST="https://your-workspace-url"
-   ```
-
+1. **Databricks CLI**: Install from [Databricks CLI Documentation](https://docs.databricks.com/dev-tools/cli/databricks-cli.html)
+2. **Azure DevOps**: Access to Azure DevOps with appropriate permissions
+3. **Azure Service Principal**: With permissions to access your Databricks workspace
 
 ## Project Structure
 
@@ -35,94 +26,68 @@ dab_sample/
 │   └── table_select.ipynb        # Sample notebook
 ├── resources/                     # DAB resource definitions
 │   └── dab_table_select_job.yml  # Job configuration
-├── databricks.yml                # Main bundle configuration
-└── README.md
+└── databricks.yml                # Main bundle configuration
+
+azure-pipelines.yml               # Azure DevOps pipeline configuration
 ```
 
 
-## Terraform Deployment
+## Azure DevOps Pipeline
 
-This project includes a Terraform template that automates the deployment of Databricks Asset Bundles. The Terraform configuration uses a `null_resource` with `local-exec` provisioner to execute DAB commands.
+### Pipeline Parameters
 
-### Terraform Structure
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `is_run_after_deploy` | Run job after deployment | `'false'` |
+| `job_name` | Name of the job to run | `'dab_table_select_job'` |
+| `working_directory` | Working directory path | `'$(System.DefaultWorkingDirectory)/dab_sample'` |
+| `target` | DAB deployment target | `'dev'` |
 
-```
-template/
-├── main.tf              # Main Terraform configuration
-├── variables.tf         # Input variables definition
-├── outputs.tf           # Output values
-├── versions.tf          # Terraform and provider versions
-└── terraform.tfstate    # State file (generated)
+### Pipeline Steps
 
-dev/westeurope/2178/
-└── terraform.tfvars     # Environment-specific variables
-```
+1. **Install Azure CLI**: Installs Azure CLI for authentication
+2. **Install Required Packages**: Installs unzip, curl, and dependencies
+3. **Install Databricks CLI**: Installs Databricks CLI
+4. **Azure Authentication**: Logs in using service principal
+5. **Bundle Validation**: Validates DAB configuration
+6. **Bundle Deployment**: Deploys to target environment
+7. **Job Execution** (Optional): Runs specified job after deployment
 
-### Terraform Variables
+### Required Variables
 
-The following variables can be configured in your `terraform.tfvars` file:
+Create variable group `scb-demo` in Azure DevOps:
 
-| Variable | Description | Type | Default | Example |
-|----------|-------------|------|---------|---------|
-| `target` | Target environment (dev, stg, prod) | string | - | `"dev"` |
-| `job` | Name of the DAB job to run | string | - | `"dab_table_select_job"` |
-| `working_dir` | Path to the DAB project directory | string | - | `"../dab_sample"` |
-| `is_run_after_deploy` | Whether to run job after deployment | bool | `true` | `true` |
-| `env_file_prefix` | Prefix for environment files | string | `"env"` | `"env"` |
+| Variable | Description |
+|----------|-------------|
+| `azure_sp_client_id` | Service principal client ID |
+| `azure_sp_client_secret` | Service principal client secret |
+| `azure_sp_tenant_id` | Azure tenant ID |
+| `azure_ws_resource_id` | Databricks workspace resource ID |
 
-### Deployment Commands
-
-#### 1. Initialize Terraform
-
-Navigate to the template directory and initialize Terraform:
-
+### Commands
 ```bash
-cd template
-terraform init
+# Validate bundle
+databricks bundle validate -t dev
+
+# Deploy to development
+databricks bundle deploy -t dev
+
+# Run job
+databricks bundle run dab_table_select_job -t dev
+
+# Check status
+databricks bundle status -t dev
 ```
 
-#### 2. Plan Deployment
+## Deployment Modes
 
-Review the deployment plan before applying:
-
-```bash
-# For development environment
-terraform plan -var-file="../dev/westeurope/2178/terraform.tfvars"
-
-# For staging environment (if you have stg terraform.tfvars)
-terraform plan -var-file="../stg/westeurope/2178/terraform.tfvars"
-
-# For production environment (if you have prod terraform.tfvars)
-terraform plan -var-file="../prod/westeurope/2178/terraform.tfvars"
-```
-
-#### 3. Apply Deployment
-
-Deploy the DAB bundle using Terraform:
-
-```bash
-# For development environment
-terraform apply -var-file="../dev/westeurope/2178/terraform.tfvars"
-
-# For staging environment
-terraform apply -var-file="../stg/westeurope/2178/terraform.tfvars"
-
-# For production environment
-terraform apply -var-file="../prod/westeurope/2178/terraform.tfvars"
-```
-
-#### 4. Destroy Resources (if needed)
-
-To clean up and remove the deployment:
-
-```bash
-terraform destroy -var-file="../dev/westeurope/2178/terraform.tfvars"
-```
+- **Development Mode**: Resources prefixed with `[dev username]`, schedules paused
+- **Production Mode**: Resources deployed as-is, schedules active
 
 
 ## Additional Resources
 
 - [Databricks Asset Bundles Documentation](https://docs.databricks.com/dev-tools/bundles/index.html)
 - [Databricks CLI Documentation](https://docs.databricks.com/dev-tools/cli/databricks-cli.html)
-- [Deployment Modes](https://docs.databricks.com/dev-tools/bundles/deployment-modes.html)
-- [Terraform null_resource](https://www.terraform.io/docs/providers/null/resource.html)
+- [Azure DevOps Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/)
+- [Service Principal Authentication](https://docs.databricks.com/dev-tools/bundles/authentication.html)
