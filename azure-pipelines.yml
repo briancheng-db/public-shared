@@ -68,13 +68,24 @@ steps:
 
 # Step 1: Login to Azure
 - task: Bash@3
-  displayName: 'Interactive Login to Azure'
+  displayName: 'Login to Azure'
   inputs:
     targetType: 'inline'
     script: |
+      set -e  # Exit on any error
       echo "Logging in to Azure interactively..."
       az login --service-principal --username $(azure_sp_client_id) --password $(azure_sp_client_secret) --tenant $(azure_sp_tenant_id)
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Azure login failed"
+        exit 1
+      fi
+      # az login --use-device-code # interactive login
       az account set --subscription $(subscription_id)
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Failed to set subscription"
+        exit 1
+      fi
+      echo "Azure login successful"
 
 # Step 2: Validate Databricks Asset Bundle
 - task: Bash@3
@@ -83,8 +94,13 @@ steps:
     targetType: 'inline'
     workingDirectory: '${{ parameters.working_directory }}'
     script: |
+      set -e  # Exit on any error
       echo "Validating Databricks Asset Bundle..."
-      databricks bundle validate -t ${{ parameters.target }}
+      databricks bundle validate -t # ${{ parameters.target }}
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Bundle validation failed"
+        exit 1
+      fi
       echo "Bundle validation completed successfully."
 
 # Step 3: Deploy Databricks Asset Bundle
@@ -94,8 +110,13 @@ steps:
     targetType: 'inline'
     workingDirectory: '${{ parameters.working_directory }}'
     script: |
+      set -e  # Exit on any error
       echo "Deploying Databricks Asset Bundle..."
       databricks bundle deploy -t ${{ parameters.target }}
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Bundle deployment failed"
+        exit 1
+      fi
       echo "Bundle deployment completed successfully."
 
 # Step 4: Run Databricks Job (Conditional)
@@ -106,9 +127,14 @@ steps:
     targetType: 'inline'
     workingDirectory: '${{ parameters.working_directory }}'
     script: |
+      set -e  # Exit on any error
       echo "Running Databricks job after deployment..."
       if [ -n "${{ parameters.job_name }}" ]; then
         databricks bundle run ${{ parameters.job_name }} -t ${{ parameters.target }} --no-wait
+        if [ $? -ne 0 ]; then
+          echo "ERROR: Job execution failed"
+          exit 1
+        fi
         echo "Job execution initiated successfully."
       else
         echo "No job name specified, skipping job execution."
