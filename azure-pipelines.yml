@@ -92,7 +92,7 @@ steps:
     script: |
       set -e  # Exit on any error
       echo "Validating Databricks Asset Bundle..."
-      databricks bundle validate -t # ${{ parameters.target }}
+      databricks bundle validate -t ${{ parameters.target }}
       if [ $? -ne 0 ]; then
         echo "ERROR: Bundle validation failed"
         exit 1
