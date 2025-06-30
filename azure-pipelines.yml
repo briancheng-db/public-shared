@@ -1,5 +1,5 @@
 trigger:
-- dab-ado-demo
+- dab_tamplate_wo_tf
 
 parameters:
 - name: is_run_after_deploy
