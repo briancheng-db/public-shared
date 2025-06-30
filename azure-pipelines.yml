@@ -37,6 +37,17 @@ steps:
     script: |
       curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
+# Step 0.25: Install Required Packages
+- task: Bash@3
+  displayName: 'Install Required Packages'
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Installing required packages..."
+      sudo apt-get update
+      sudo apt-get install -y unzip curl wget ca-certificates
+      echo "Required packages installed successfully."
+
 # Step 0.5: Install Databricks CLI
 - task: Bash@3
   displayName: 'Install Databricks CLI'
