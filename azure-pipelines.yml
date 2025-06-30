@@ -17,14 +17,16 @@ parameters:
   displayName: 'Working Directory'
   type: string
   default: '$(System.DefaultWorkingDirectory)/dab_sample'
+- name: target
+  displayName: 'DAB Job Target'
+  type: string
+  default: 'dev'
 
 pool:
   name: dbxbcpool
 
 variables:
   - group: scb-demo    # Reference to the variable group
-  - name: target
-    value: 'module.db_workspace' # Specify the target module/resource here
   - name: DATABRICKS_AZURE_RESOURCE_ID
     value: $(databricks_azure_resource_id)
   - name: subscription_id
