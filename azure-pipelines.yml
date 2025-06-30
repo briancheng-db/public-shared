@@ -28,7 +28,7 @@ pool:
 variables:
   - group: scb-demo    # Reference to the variable group
   - name: DATABRICKS_AZURE_RESOURCE_ID
-    value: $(databricks_azure_resource_id)
+    value: $(azure_ws_resource_id)
   - name: subscription_id
     value: 'edd4cc45-85c7-4aec-8bf5-648062d519bf' # Replace with your Azure Subscription ID
 
