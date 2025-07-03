@@ -2,6 +2,13 @@ trigger:
 - dab_data_access_demo
 
 parameters:
+- name: is_run_after_deploy
+  displayName: 'Run Job After Deployment'
+  type: string
+  default: 'false'
+  values:
+  - 'true'
+  - 'false'
 - name: job_name
   displayName: 'Job Name to Run'
   type: string
