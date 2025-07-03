@@ -1,14 +1,7 @@
 trigger:
-- dab_tamplate_wo_tf
+- dab_data_access_demo
 
 parameters:
-- name: is_run_after_deploy
-  displayName: 'Run Job After Deployment'
-  type: string
-  default: 'false'
-  values:
-  - 'true'
-  - 'false'
 - name: job_name
   displayName: 'Job Name to Run'
   type: string
@@ -16,14 +9,15 @@ parameters:
 - name: working_directory
   displayName: 'Working Directory'
   type: string
-  default: '$(System.DefaultWorkingDirectory)/dab_sample'
+  default: '$(System.DefaultWorkingDirectory)/scb_data_access_dab'
 - name: target
   displayName: 'DAB Job Target'
   type: string
   default: 'dev'
 
 pool:
-  name: dbxbcpool
+  vmImage: 'ubuntu-latest'
+  # name: dbxbcpool
 
 variables:
   - group: scb-demo    # Reference to the variable group

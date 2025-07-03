@@ -1,0 +1,32 @@
+## pre-requisites
+# where do we create the masking functions:
+# in a common schema where all users have execute access on functions
+
+masking_functions:
+  - name: cib_cash_prod.common.generic_masking_function
+    mask_value: "*****"
+    pii_grant_groups:
+      - scb_cib_cash_prod_gold_app1_ro_pii
+    exec_grant_groups:
+      - scb_cib_cash_prod_gold_app1_rw
+      - scb_cib_cash_prod_gold_app1_ro
+      - scb_cib_cash_prod_admin
+      - scb_cib_cash_prod_gold_app1_ro_pii
+      # <data_domain>_ro_pii
+
+  # - name: <catalog>.<schema>.mask_ssn
+  #   mask_value: ***-***-*****
+  #   grant_groups:
+  #     - <data_domain>_ro_pii
+
+
+table_apply:
+  - table_name: cib_cash_prod.gold_app1.tpch_customer
+    apply_mask:
+      - masking_function: cib_cash_prod.common.generic_masking_function
+        columns:
+          - c_name
+          - c_address
+          - c_phone
+      # - masking_function: <catalog>.<schema>.mask_ssn
+      #    - ssn

@@ -1,0 +1,14 @@
+resources:
+  jobs:
+    clm_job:
+      name: clm
+      tasks:
+        - task_key: clm_demo
+          notebook_task:
+            notebook_path: ../notebooks/demo-clm.py
+    data_replication_job:
+      name: data_replication
+      tasks:
+        - task_key: data_replication_demo
+          notebook_task:
+            notebook_path: ../notebooks/demo-data_replication.py

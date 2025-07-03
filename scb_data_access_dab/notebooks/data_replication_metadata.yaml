@@ -1,0 +1,6 @@
+data_replications:
+  - prod_table_name: cib_cash_prod.gold_app1.tpch_customer
+    filter_condition: ~
+    target_table_name: cib_cash_dev.gold_app1.tpch_customer
+    target_write_mode: overwrite
+    target_partition_column: ~
