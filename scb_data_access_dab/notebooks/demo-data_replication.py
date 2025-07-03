@@ -1,7 +1,7 @@
 # Databricks notebook source
 import yaml
 
-PRINT_MODE = True
+PRINT_MODE = False
 
 # COMMAND ----------
 # MAGIC %md

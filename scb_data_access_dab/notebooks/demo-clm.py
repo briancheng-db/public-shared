@@ -3,7 +3,7 @@
 # import the necessary libraries, e.g. yaml parser, etc.
 import yaml
 
-PRINT_MODE = True
+PRINT_MODE = False
 
 # COMMAND ----------
 # MAGIC %md
