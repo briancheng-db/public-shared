@@ -14,6 +14,8 @@ This project demonstrates how to use Databricks Asset Bundles (DAB) to deploy an
 2. **Azure DevOps**: Access to Azure DevOps with appropriate permissions
 3. **Azure Service Principal**: With permissions to access your Databricks workspace
 
+
+
 ## Project Structure
 
 ```
@@ -30,7 +32,6 @@ dab_sample/
 
 azure-pipelines.yml               # Azure DevOps pipeline configuration
 ```
-
 
 ## Azure DevOps Pipeline
 
@@ -78,12 +79,6 @@ databricks bundle run dab_table_select_job -t dev
 # Check status
 databricks bundle status -t dev
 ```
-
-## Deployment Modes
-
-- **Development Mode**: Resources prefixed with `[dev username]`, schedules paused
-- **Production Mode**: Resources deployed as-is, schedules active
-
 
 ## Additional Resources
 
